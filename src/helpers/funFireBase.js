@@ -19,12 +19,27 @@ export const obtenerDatos = async ( setTareas ) => {
 }
 
 
-export const setDatos = async ( tarea , setTareaNueva ) => {
+export const setDatos = async ( tarea , setIdT ) => {
     try {
-        await tareas.add( tarea ).then(res => console.log( res.id ))
+        await tareas.add( tarea ).then(res => {
+            setIdT(res.id)
+            
+        })
 
-        setTareaNueva({})
+        
 
+    } catch (e) {
+        console.log( e )
+        return {
+            ok : false
+        }
+
+    }
+}
+
+export const eliminarDato = async ( id ) => {
+    try {
+        await tareas.doc(id).delete()
     } catch (e) {
         console.log( e )
     }
