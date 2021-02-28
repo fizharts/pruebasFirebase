@@ -1,3 +1,4 @@
+import { NavBar } from './components/NavBar/NavBar';
 import { Contenedor } from './components/Contenedor';
 import './App.css';
 import { Fragment } from 'react';

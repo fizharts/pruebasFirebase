@@ -1,31 +1,35 @@
-import { obtenerDatos, setDatos, eliminarDato } from './../helpers/funFireBase';
-import React, { useEffect, useState } from 'react'
+import { NavBar } from './NavBar/NavBar';
+import { obtenerDatos, setDatos, eliminarDato, actualizarTarea, agregarImagen } from './../helpers/funFireBase';
+import React, { useEffect, useState, Fragment, useRef } from 'react'
 import Swal from 'sweetalert2'
 
 export const Contenedor = () => {
     const [tareas, setTareas] = useState([])
     const [tareaNueva, setTareaNueva] = useState({
         edad: 0,
-        estatus: false ,
-        id: "0" ,
+        estatus: false,
         imagen: "",
         nombre: ""
     })
     const [imagen, setImagen] = useState('')
     const [idT, setIdT] = useState('')
     const [modoEdicion, setmodoEdicion] = useState(false)
+    const ref = useRef()
+    const imagenFondo = useRef()
 
     const handleChange = ({ target: { name, value, type, files } }) => {
-        console.log(type)
         // console.log( files )
         if (type == 'file') {
-            // setImagen( files[0] )
-            console.log(files[0])
-            setImagen(
-                files[0]
-            )
+
+            agregarImagen(files[0], name, setImagen)
+
+
+
             return
         }
+
+        console.log(imagen)
+
 
         setTareaNueva(
             {
@@ -42,7 +46,7 @@ export const Contenedor = () => {
             console.log('esta vacio')
             return
         }
-
+        console.log(tareaNueva)
         setDatos(tareaNueva, setIdT).then(res => {
             console.log(idT)
             setTareas([
@@ -51,11 +55,13 @@ export const Contenedor = () => {
             ])
         })
 
+
+
         Swal.fire(
-                    'Good job!',
-                    'You clicked the button!',
-                    'success'
-                )
+            'Good job!',
+            'You clicked the button!',
+            'success'
+        )
 
 
 
@@ -85,7 +91,7 @@ export const Contenedor = () => {
         })
 
     }
-    
+
 
     useEffect(() => {
         obtenerDatos(setTareas)
@@ -95,104 +101,159 @@ export const Contenedor = () => {
     console.log(tareas)
     console.log(imagen)
 
-    const activarEdicion = ( item )=> {
-        setmodoEdicion( true )
+    const activarEdicion = ({ id, edad, nombre, estatus, imagen }) => {
+        setmodoEdicion(true)
         // setTareas( item.name )
-        setIdT( item.id )
+        setIdT(id)
+        tareaNueva.edad = edad
+        tareaNueva.nombre = nombre
+        ref.current.value = estatus
+        imagenFondo.current.src = imagen || 'https://firebasestorage.googleapis.com/v0/b/pruebas-25635.appspot.com/o/imagenes%2Fimagendbc5d50ac819a53e75a73d5a90942130.png?alt=media&token=91736f24-846b-41f5-816d-ad24d35ed0f9'
+
     }
 
-    const editar = async ( e ) => {
+    const editar = async (e) => {
         e.preventDefault()
+        if (Object.entries(tareaNueva).length === 0) {
+            console.log('esta vacio')
+            return
+        }
+        actualizarTarea(tareaNueva, idT)
+
+        let nuevoArray = tareas.map(({ nombre, id, imagen, edad, estatus }) => {
+            if (id === idT) {
+
+                return {
+                    id,
+                    nombre: tareaNueva.nombre, imagen, edad, estatus
+                }
+            } else {
+                return {
+                    nombre, id, imagen, edad, estatus
+                }
+            }
+
+        })
+
+        Swal.fire(
+            'Good job!',
+            'You clicked the button!',
+            'success'
+        )
+        setTareas(nuevoArray)
+
 
     }
     return (
-        <div className="container">
-            <h1>Datos fireBase</h1>
-            <div className="row">
-                <div className="col-lg-6">
-                    <ul className="list">
-                        {
-                            tareas.map(tarea =>
-                            (
-                                <li
-                                    className="list-group-item"
-                                    key={
-                                        tarea.id
-                                    }>
-                                    {tarea.nombre}
-                                    <button
-                                        className="btn btn-danger float-right btn-sm"
-                                        onClick={() => eliminar(tarea.id)}>
-                                        Eliminar</button>
-                                    <button
-                                        className="btn btn-info btn-sm float-right mr-2"
-                                        onClick={
-                                            () => activarEdicion( tarea )
+        <Fragment>
+            <NavBar tareas={tareas} setTareas={setTareas} />
+
+            <div className="container">
+                <h1>Datos fireBase</h1>
+                <div className="row">
+                    <div className="col-lg-6">
+                        <ul className="list">
+                            {
+                                tareas.map(tarea =>
+                                (
+                                    <li
+                                        className="list-group-item"
+                                        key={
+                                            tarea.id
                                         }>
-                                        Editar
+                                        {tarea.nombre}
+
+                                        <button
+                                            className="btn btn-danger float-right btn-sm"
+                                            onClick={() => eliminar(tarea.id)}>
+                                            Eliminar</button>
+                                        <button
+                                            className="btn btn-info btn-sm float-right mr-2"
+                                            onClick={
+                                                () => activarEdicion(tarea)
+                                            }>
+                                            Editar
                                         </button>
-                                </li>
-                            )
-                            )
-                        }
-                    </ul>
-                </div>
-                <div className="col-lg-6">
-                    <h3>{
-                        modoEdicion ? 'Editar Tarea': 'Agregar tarea'
-                    }</h3>
-                    <form onSubmit={modoEdicion ? editar : agregar}>
-                        <div className="form-group">
-                            <label className="control-label">Nombre</label>
-                            <input
-                                className="form-control"
-                                name="nombre" type="text"
-                                value={ tareaNueva.nombre }
-                                onChange={(e) => handleChange(e)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="control-label">Edad</label>
-                            <input
-                                className="form-control"
-                                name="edad"
-                                value={tareaNueva.edad}
-                                type="number"
-                                onChange={(e) => handleChange(e)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="control-label"></label>
-                            <select
-                                className="form-control"
-                                name="estatus"
-                                onChange={(e) => handleChange(e)}
-                            >
-                                <option value={true} >Activo</option>
-                                <option value={false}>Inactivo</option>
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <input
-                                className="form-control"
-                                type="file"
-                                name="imagen"
-                                onChange={(e) => handleChange(e)}
-                            />
-                        </div>
-                        <button className={
-                            modoEdicion ? 'btn btn-info btn-block' :
-                                        'btn btn-dark btn-block'
-                        }
-                            type="submit"
+                                    </li>
+                                )
+                                )
+                            }
+                        </ul>
+                    </div>
+                    <div className="col-lg-6">
+                        <h3>{
+                            modoEdicion ? 'Editar Tarea' : 'Agregar tarea'
+                        }</h3>
+                        <form onSubmit={modoEdicion ? editar : agregar}>
+                            <div className="form-group">
+                                <label className="control-label">Nombre</label>
+                                <input
+                                    className="form-control"
+                                    name="nombre" type="text"
+                                    value={tareaNueva.nombre}
+                                    onChange={(e) => handleChange(e)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="control-label">Edad</label>
+                                <input
+                                    className="form-control"
+                                    name="edad"
+                                    value={tareaNueva.edad}
+                                    type="number"
+                                    onChange={(e) => handleChange(e)}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="control-label"></label>
+                                <select
+                                    className="form-control"
+                                    name="estatus"
+                                    ref={ref}
+                                    onChange={(e) => handleChange(e)}
+                                >
+                                    <option value={true} >Activo</option>
+                                    <option value={false}>Inactivo</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                            {
+                                modoEdicion ? (
+                                    <img
+                                    ref={imagenFondo}
+                                    className="img-fluid"
+                                    alt="Responsive image" />
+
+                                ):(
+                                    <img
+                                    ref={imagenFondo}
+                                    className="img-fluid"
+                                    alt="Responsive image" />
+                                )
+                            }
+                            
+                                <input
+                                    className="form-control"
+                                    type="file"
+                                    name="imagen"
+                                    onChange={(e) => handleChange(e)}
+                                />
+                            </div>
+                            <button className={
+                                modoEdicion ? 'btn btn-info btn-block' :
+                                    'btn btn-dark btn-block'
+                            }
+                                type="submit"
                             >
                                 {
-                                    modoEdicion ? 'Editar' :' Agregar'
+                                    modoEdicion ? 'Editar' : ' Agregar'
                                 }
                             </button>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Fragment>
+
     )
 }
