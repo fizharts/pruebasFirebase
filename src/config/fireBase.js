@@ -18,8 +18,10 @@
 
   let db = firebase.firestore()
   let storage = firebase.storage()
+  let auth = firebase.auth()
 
   export {
       db ,
-      storage
+      storage ,
+      auth
   }

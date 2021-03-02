@@ -19,12 +19,9 @@ export const Contenedor = () => {
 
     const handleChange = ({ target: { name, value, type, files } }) => {
         // console.log( files )
-        if (type == 'file') {
+        if (type === 'file') {
 
             agregarImagen(files[0], name, setImagen)
-
-
-
             return
         }
 
@@ -222,13 +219,13 @@ export const Contenedor = () => {
                                     <img
                                     ref={imagenFondo}
                                     className="img-fluid"
-                                    alt="Responsive image" />
+                                    alt="Responsive " />
 
                                 ):(
                                     <img
                                     ref={imagenFondo}
                                     className="img-fluid"
-                                    alt="Responsive image" />
+                                    alt="Responsive " />
                                 )
                             }
                             

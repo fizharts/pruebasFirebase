@@ -14,34 +14,34 @@ export const NavBar = ( { tareas , setTareas  } ) => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             {/*tips: to change the nav placement use .fixed-top,.fixed-bottom,.sticky-top*/}
-            <a className="navbar-brand" href="#">My Brand</a>
-            {/*<a class="navbar-brand" href="#">
+            <link className="navbar-brand" to={'/'}>My Brand</link>
+            {/*<link class="navbar-brand" to={'/'}>
 <img src="..." class="d-inline-block align-top" width="30" height="30" alt="...">My Brand
-</a>*/}
+</link>*/}
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon" />
             </button>
             <div className="collapse navbar-collapse" id="navbarContent">
                 <ul className="navbar-nav mr-auto">
                     <li className="nav-item active">
-                        <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+                        <link className="nav-link" to={'/'}>Home <span className="sr-only">(current)</span></link>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">Link</a>
+                        <link className="nav-link" to={'/'}>Link</link>
                     </li>
                     <li className="nav-item dropdown">
-                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <link className="nav-link dropdown-toggle" to={'/'} id="navbarDropdown" data-toggle="dropdown" >
                             Dropdown
-                        </a>
+                        </link>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className="dropdown-item" href="#">Action</a>
-                            <a className="dropdown-item" href="#">Another action</a>
+                            <link className="dropdown-item" to={'/'}>Action</link>
+                            <link className="dropdown-item" to={'/'}>Another action</link>
                             <div className="dropdown-divider" />
-                            <a className="dropdown-item" href="#">Something else here</a>
+                            <link className="dropdown-item" to={'/'}>Something else here</link>
                         </div>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link disabled" href="#" tabIndex={-1} aria-disabled="true">Disabled</a>
+                        <link className="nav-link disabled" to={'/'} tabIndex={-1} >Disabled</link>
                     </li>
                 </ul>
                 <span className="navbar-text">

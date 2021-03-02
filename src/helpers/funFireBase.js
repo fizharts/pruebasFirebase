@@ -65,7 +65,7 @@ export const agregarImagen = async ( imagen , user , setImagen ) => {
 
 export const actualizarTarea = async ( tarea , id ) => {
     try {
-        const resultado = await tareas.doc(id).update(tarea)
+        await tareas.doc(id).update(tarea)
         return true
     } catch (e) {
         console.log( e )
