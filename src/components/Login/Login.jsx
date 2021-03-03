@@ -1,14 +1,12 @@
 import React, { Fragment, useCallback, useState } from 'react'
-import { auth } from '../../config/fireBase'
+import { withRouter } from 'react-router-dom'
+import { auth , db } from '../../config/fireBase'
 
-export const Login = () => {
+const Login = ( { history } ) => {
     const [email, setEmail] = useState('')
     const [pass, setPass] = useState('')
     const [error, setError] = useState(null)
     const [registro, setRegistro] = useState(true)
-
-    
-    
 
     const procesarDatos = e => {
         e.preventDefault()
@@ -29,9 +27,10 @@ export const Login = () => {
         }
 
         setError( null )
-
         if( registro ){
             registrarUs()
+        }else{
+            login()
         }
 
         console.log( 'pasando validaciones' )
@@ -40,8 +39,25 @@ export const Login = () => {
     const registrarUs = useCallback( async () => {
         try {
             const res = await auth.createUserWithEmailAndPassword(email , pass)
+            await db.collection('usuarios')
+                        .doc(res.user.email)
+                        .set({
+                            email : res.user.email ,
+                            uid : res.user.uid
+                        })
             console.log( res.user );
+            await db.collection(res.user.email).add({
+                name: 'tarea de ejemplo',
+                fecha : Date.now()
+            })
+            setEmail('')
+            setPass('')
+            setError(null)
+            history.push('/admin')
         } catch (error) {
+    
+    
+
             console.log(error);
             if (error.code === 'auth/invalid-email'){
             setError('Email no valido');
@@ -51,9 +67,27 @@ export const Login = () => {
             
             }
         }
-    } , [ email , pass ]) 
+    } , [ email , pass , history]) 
 
-
+    const login = useCallback( async () => {
+        try {
+            const res = await auth.signInWithEmailAndPassword(email , pass)
+            console.log( res.user )
+            setEmail('')
+            setPass('')
+            setError(null)
+            history.push('/admin')
+            
+        } catch (e) {
+            console.log(e)
+            if( e.code === "auth/user-not-found" ){
+                setError('Usuario no existe')
+            }
+            if (e.code === "auth/wrong-password") {
+                setError('Password no valido')
+            }
+        }
+    }, [ email , pass , history ])
 
     return (
         <Fragment>
@@ -69,6 +103,7 @@ export const Login = () => {
                                 </div>
                             )
                         }
+                        
                         <input 
                             className="form-control mb-2" 
                             type="email"
@@ -103,3 +138,5 @@ export const Login = () => {
         </Fragment>
     )
 }
+
+export default withRouter( Login )

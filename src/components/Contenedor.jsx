@@ -1,4 +1,4 @@
-import { NavBar } from './NavBar/NavBar';
+import NavBar from './NavBar/NavBar';
 import { obtenerDatos, setDatos, eliminarDato, actualizarTarea, agregarImagen } from './../helpers/funFireBase';
 import React, { useEffect, useState, Fragment, useRef } from 'react'
 import Swal from 'sweetalert2'
@@ -18,16 +18,11 @@ export const Contenedor = () => {
     const imagenFondo = useRef()
 
     const handleChange = ({ target: { name, value, type, files } }) => {
-        // console.log( files )
         if (type === 'file') {
 
             agregarImagen(files[0], name, setImagen)
             return
         }
-
-        console.log(imagen)
-
-
         setTareaNueva(
             {
                 ...tareaNueva,
@@ -214,21 +209,21 @@ export const Contenedor = () => {
                                 </select>
                             </div>
                             <div className="form-group">
-                            {
-                                modoEdicion ? (
-                                    <img
-                                    ref={imagenFondo}
-                                    className="img-fluid"
-                                    alt="Responsive " />
+                                {
+                                    modoEdicion ? (
+                                        <img
+                                            ref={imagenFondo}
+                                            className="img-fluid"
+                                            alt="Responsive " />
 
-                                ):(
-                                    <img
-                                    ref={imagenFondo}
-                                    className="img-fluid"
-                                    alt="Responsive " />
-                                )
-                            }
-                            
+                                    ) : (
+                                        <img
+                                            ref={imagenFondo}
+                                            className="img-fluid"
+                                            alt="Responsive " />
+                                    )
+                                }
+
                                 <input
                                     className="form-control"
                                     type="file"
